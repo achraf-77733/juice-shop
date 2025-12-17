@@ -30,7 +30,12 @@ jobs:
         username: ${{ secrets.AZURE_SSH_USER }}
         key: ${{ secrets.AZURE_SSH_KEY }}
         script: |
-          docker stop juice-shop || true
-          docker rm juice-shop || true
-          docker load < <(docker save juice-shop)
-          docker run -d -p 3000:3000 --name juice-shop juice-shop
+            docker stop juice-shop || true
+            docker rm juice-shop || true
+
+            docker pull achrafb8h/juice-shop:1.0.1
+
+            docker run -d \
+              -p 3000:3000 \
+              --name juice-shop \
+              achrafb8h/juice-shop:1.0.1
