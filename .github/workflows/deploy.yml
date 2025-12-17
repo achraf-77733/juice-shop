@@ -11,8 +11,17 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: login to DockerHub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
     - name: Build Docker image
-      run: docker build -t juice-shop .
+      run: docker build -t achrafb8h/juice-shop:latest .
+
+    - name: Push Docker image to DockerHub
+      run: docker push achrafb8h/juice-shop:latest
 
     - name: Deploy to Azure VM
       uses: appleboy/ssh-action@v1.0.0
