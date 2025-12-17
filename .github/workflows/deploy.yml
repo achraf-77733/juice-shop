@@ -1,0 +1,27 @@
+name: DevOps Auto Deploy
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build Docker image
+      run: docker build -t juice-shop .
+
+    - name: Deploy to Azure VM
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.AZURE_VM_IP }}
+        username: ${{ secrets.AZURE_SSH_USER }}
+        key: ${{ secrets.AZURE_SSH_KEY }}
+        script: |
+          docker stop juice-shop || true
+          docker rm juice-shop || true
+          docker load < <(docker save juice-shop)
+          docker run -d -p 3000:3000 --name juice-shop juice-shop
